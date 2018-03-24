@@ -1,7 +1,5 @@
 package com.armandorvila.poc.accounts.service;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.stereotype.Service;
@@ -15,20 +13,22 @@ import reactor.core.publisher.Flux;
 @Service
 public class TransactionsService {
 	
-	private static final String TRANSACTIONS_SERVICE_PATH = "/transactions?limit={limit}&offset={offset}";
-	private static final String TRANSACTIONS_SERVICE_ID = "transactions-service";
+	static final String TRANSACTIONS_SERVICE_PATH = "/transactions?limit={limit}&offset={offset}";
+	static final String TRANSACTIONS_SERVICE_ID = "transactions-service";
 
 	private LoadBalancerClient loadBalancer;
+	private WebClient webClient;
 
-	public TransactionsService(LoadBalancerClient loadBalancer) {
+	public TransactionsService(LoadBalancerClient loadBalancer, WebClient webClient) {
 		this.loadBalancer = loadBalancer;
+		this.webClient = webClient;
 	}
 
 	public Flux<AccountTransaction> getAccountTransactions(String accountId, Integer limit, Integer offset) {
-		return WebClient.create(getServiceUrl())
-				.get()
-				.uri(TRANSACTIONS_SERVICE_PATH, limit, offset)
-				.accept(APPLICATION_JSON)
+		final String uri = getServiceUrl() + TRANSACTIONS_SERVICE_PATH;
+		
+		return webClient.get()
+				.uri(uri, limit, offset)
 				.retrieve()
 				.bodyToFlux(AccountTransaction.class);
 	}

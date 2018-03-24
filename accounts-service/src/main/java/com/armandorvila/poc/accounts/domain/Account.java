@@ -37,4 +37,9 @@ public class Account {
 	public Account(String description) {
 		this.description = description;
 	}
+	
+	public Account(String id, String description) {
+		this.id = id;
+		this.description = description;
+	}
 }

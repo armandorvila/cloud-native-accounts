@@ -25,6 +25,7 @@ public class TransactionResource {
 
 	@GetMapping("/transactions")
 	public Flux<Transaction> listTransactions(
+			@RequestParam(required = true) String accountId,
 			@RequestParam(defaultValue = DEFAULT_LIMIT) Integer limit,
 			@RequestParam(defaultValue = DEFAULT_OFFSET) Integer offset) {
 		

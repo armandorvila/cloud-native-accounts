@@ -1,7 +1,11 @@
 package com.armandorvila.poc.accounts.resource;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,8 +44,10 @@ public class AccountResource {
 	}
 
 	@GetMapping("/accounts/{id}")
-	public Mono<Account> getAccount(@PathVariable("id") String id) {
-		return accountRepository.findById(id);
+	public Mono<ResponseEntity<Account>> getAccount(@PathVariable("id") String id) {
+		return accountRepository.findById(id)
+				.map(account -> new ResponseEntity<>(account, OK))
+				.defaultIfEmpty(new ResponseEntity<>(NOT_FOUND));
 	}
 
 	@GetMapping("/accounts/{accountId}/transactions")

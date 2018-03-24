@@ -37,4 +37,9 @@ public class Transaction {
 	public Transaction(String description) {
 		this.description = description;
 	}
+	
+	public Transaction(String id, String description) {
+		this.id = id;
+		this.description = description;
+	}
 }
