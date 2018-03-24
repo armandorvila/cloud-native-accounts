@@ -2,6 +2,13 @@ version: '3'
 
 services:  
 
+  cloudnative-accounts-mongodb:
+    container_name: cloudnative-accounts-mongodb
+    image: mongo:3.6
+    ports:
+        - 27017:27017
+    command: mongod --smallfiles --logpath=/dev/null
+
   discovery-service:
     container_name: discovery-service
     image: armandorvila/discovery-service
@@ -24,11 +31,14 @@ services:
     environment:
       SERVER_PORT: 8000
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      SPRING_AUTOCONFIGURE_EXCLUDE: org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+      SPRING_DATA_MONGODB_URI: mongodb://cloudnative-accounts-mongodb:27017/transactions
     depends_on:
       - discovery-service
+      - cloudnative-accounts-mongodb
 
   
-  acounts-service:
+  accounts-service:
     image: armandorvila/acounts-service
     build:
       context: .
@@ -38,8 +48,11 @@ services:
     environment:
       SERVER_PORT: 8000
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      SPRING_AUTOCONFIGURE_EXCLUDE: org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+      SPRING_DATA_MONGODB_URI: mongodb://cloudnative-accounts-mongodb:27017/transactions
     depends_on:
       - discovery-service
+      - cloudnative-accounts-mongodb
       
   
   edge-service:

@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 @Service
 public class TransactionsService {
 	
-	static final String TRANSACTIONS_SERVICE_PATH = "/transactions?limit={limit}&offset={offset}";
+	static final String TRANSACTIONS_SERVICE_PATH = "/transactions?accountId={accountId}&limit={limit}&offset={offset}";
 	static final String TRANSACTIONS_SERVICE_ID = "transactions-service";
 
 	private LoadBalancerClient loadBalancer;
@@ -28,7 +28,7 @@ public class TransactionsService {
 		final String uri = getServiceUrl() + TRANSACTIONS_SERVICE_PATH;
 		
 		return webClient.get()
-				.uri(uri, limit, offset)
+				.uri(uri, accountId, limit, offset)
 				.retrieve()
 				.bodyToFlux(AccountTransaction.class);
 	}

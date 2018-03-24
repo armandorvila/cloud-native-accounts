@@ -59,7 +59,7 @@ public class TransactionServiceTests {
 		given(instance.getUri()).willReturn(URI.create("http://someuri"));
 		
 		given(webClient.get()
-				.uri("http://someuri/transactions?limit={limit}&offset={offset}", 100, 0)
+				.uri("http://someuri/transactions?accountId={accountId}&limit={limit}&offset={offset}", ACCOUNT_ID, 100, 0)
 				.retrieve()
 				.bodyToFlux(AccountTransaction.class)).willReturn(Flux.just(transaction));
 		
