@@ -3,17 +3,23 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>discovery-service</artifactId>
-	<packaging>jar</packaging>
-
 	<parent>
 		<groupId>com.armandorvila.poc</groupId>
 		<artifactId>cloud-native-accounts</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath />
 	</parent>
 
-	<dependencies>
+	<artifactId>discovery-service</artifactId>
+	<packaging>jar</packaging>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-actuator</artifactId>
+		</dependency>
 	</dependencies>
 </project>

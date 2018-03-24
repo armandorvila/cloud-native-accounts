@@ -1,0 +1,21 @@
+server:
+  port: 9080
+  
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+      
+spring:
+  mongodb:
+    embedded:
+      storage:
+        database-dir: /mongodb
+        
+        
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: '*'

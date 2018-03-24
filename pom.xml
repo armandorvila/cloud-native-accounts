@@ -3,17 +3,17 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-parent</artifactId>
+		<version>Finchley.M9</version>
+		<relativePath />
+	</parent>
+
 	<groupId>com.armandorvila.poc</groupId>
 	<artifactId>cloud-native-accounts</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.0.RELEASE</version>
-		<relativePath />
-	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,14 +22,16 @@
 
 		<docker.image.prefix>armandorvila</docker.image.prefix>
 		<jacoco.percentage.instruction>0.90</jacoco.percentage.instruction>
+
+		<spring-cloud.version>Finchley.M9</spring-cloud.version>
 	</properties>
-	
+
 	<modules>
-        <module>accounts-service</module>
+		<module>accounts-service</module>
 		<module>transactions-service</module>
-        <module>discovery-service</module>
-        <module>edge-service</module>
-    </modules>
+		<module>discovery-service</module>
+		<module>edge-service</module>
+	</modules>
 
 	<dependencies>
 		<dependency>
@@ -37,7 +39,7 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -145,4 +147,15 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/libs-milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>

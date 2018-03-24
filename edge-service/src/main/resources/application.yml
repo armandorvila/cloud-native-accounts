@@ -1,0 +1,44 @@
+server:
+  port: 80
+
+spring: 
+  
+  cloud:
+    gateway:
+      
+      routes:
+      - id: accounts
+        uri: lb://accounts-service
+        predicates:
+        - Path=/api/accounts
+        filters:
+        - RewritePath=/api/(?<segment>.*), /$\{segment}
+     
+     
+      - id: account
+        uri: lb://accounts-service
+        predicates:
+        - Path=/api/accounts/{accountId}
+        filters:
+        - RewritePath=/api/(?<segment>.*), /$\{segment}
+      
+     
+      - id: transactions
+        uri: lb://accounts-service
+        predicates:
+        - Path=/api/accounts/{accountId}/transactions
+        filters:
+        - RewritePath=/api/(?<segment>.*), /$\{segment}
+  
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: '*'
+  
+            
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
