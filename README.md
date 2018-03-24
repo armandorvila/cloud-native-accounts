@@ -1,8 +1,6 @@
 # Cloud Native Accounts System
 
-An example project to implement a cloud native version of an accounts system. 
-
-Technology and concepts:
+### Technology and concepts:
 
 * Java 8
 * Spring Framework 5
@@ -14,10 +12,11 @@ Technology and concepts:
 * Docker and Docker compose
 * Continuous Integration
 
-The following concepts and implementation details are out of the scope so far:
+The following are out of the scope so far:
 
 * Security
-* Event Sourcing and CQRS
+* Event Sourcing
+* CQRS
 * Service configuration 
 
 ### Domain
@@ -33,6 +32,8 @@ The following diagram shows the contexts, entities and relations:
 
 ![Domain model](./assets/Cloud_Native_Accounts_Domain.png)
 
+*NOTE*: For the sake of simplicity, customers has been modeled as a secondary entity within the accounts bounded context, but it should be an entire bounded context.
+
 ### Microservices
 
 For this system, we are implementing one microserivce per bounded context, plus other non functional services in order to provide service discovery and an entry point for the system.
@@ -41,23 +42,32 @@ For this system, we are implementing one microserivce per bounded context, plus 
 
 ### Endpoints
 
-| Endpoint | Method | Public/Private | Description |
-| ------------ | -------------- | ------- |
+The following table contains the system endpoints:
+
+| Endpoint | Method | Scope | Description |
+| ------------ | -------------- | -------------- | ------- |
 | `/accounts` | POST | Public | Creates a new account associated to the specified customer.  |
-| `/accounts` | GET | Public | Retrieves all the accounts along with the transactions of each one. It implements a customerId filter (queryParameter) and limit/offset pagination.  |
+| `/accounts` | GET | Public | Retrieves all the accounts, it implements a customerId filter and limit/offset pagination.  |
 | `/accounts/{accountId}` | GET | Public | Retrieves an specific account given the ID.  |
 | `/accounts/{accountId}/transactions` | GET | Public | Retrieves all the transactions of a given account.  |
-| `/transactions` | GET | Private | Retrieves all the transactions. It implements offset/size pagination.|
-| `/transactions/{transactionId}` | GET | Private | Retrieves a specific transaction given the ID.  |
+| `/transactions` | GET | Internal | Retrieves all the transactions, it implements offset/size pagination.|
+| `/transactions/{transactionId}` | GET | Internal | Retrieves a specific transaction given the transaction id.  |
 
 ### Running
 
-For the sake of simplicity, the microservices are built using in memory mongo db data bases. A docker compose has been provided to run the entire system:
+Considerations:
+
+* For the sake of simplicity, the microservices are built using in memory MongoDB data bases. 
+* A docker compose has been provided to run the entire system.
+* The project must be built before running the system.
+* When the system runs there are no accounts.
+* When the system runs there are some customers loaded in the accounts database. 
+
 
 ```bash
 $ mvn clean install
 $ docker-compose up --build
-$ curl http://localhost:8080/accounts -X POST -H "Content-Type: application/json" -H -d '{"customerID":"57f4dadc6d138cf005711f4e", "initialCredit":"2000.00"}'
+$ curl http://localhost:8080/accounts -X POST -H "Content-Type: application/json" -H -d '{"customerId":"57f4dadc6d138cf005711f4e", "initialCredit":"2000.00"}'
 $ curl http://localhost:8080/accounts
 ```
 
