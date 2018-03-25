@@ -1,19 +1,28 @@
 package com.armandorvila.poc.accounts.resource;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+
+import javax.validation.Valid;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.armandorvila.poc.accounts.domain.Account;
 import com.armandorvila.poc.accounts.domain.AccountTransaction;
+import com.armandorvila.poc.accounts.domain.Customer;
 import com.armandorvila.poc.accounts.repository.AccountRepository;
+import com.armandorvila.poc.accounts.repository.CustomerRepository;
+import com.armandorvila.poc.accounts.resource.dto.AccountDTO;
 import com.armandorvila.poc.accounts.service.TransactionsService;
 
 import reactor.core.publisher.Flux;
@@ -27,20 +36,41 @@ public class AccountResource {
 
 	private TransactionsService transactionsService;
 	
+	private CustomerRepository customerRepository;
 	private AccountRepository accountRepository;
 
-	public AccountResource(TransactionsService transactionsService, AccountRepository accountRepository) {
+	public AccountResource(TransactionsService transactionsService, AccountRepository accountRepository, 
+			CustomerRepository customerRepository) {
+		this.customerRepository = customerRepository;
 		this.accountRepository = accountRepository;
 		this.transactionsService = transactionsService;
 	}
-
+	
+	//TODO POST Transaction and update balance.
+	@PostMapping("/accounts")
+	public Mono<ResponseEntity<Account>> createAccount(@Valid @RequestBody AccountDTO accountDTO) {
+		
+		return customerRepository.findById(accountDTO.getCustomerId())
+				.map(c -> new Account(accountDTO.getDescription(), c))
+			    .flatMap(accountRepository::save)
+			    .map(a -> new ResponseEntity<>(a, CREATED))
+			    .switchIfEmpty(Mono.just(new ResponseEntity<>(BAD_REQUEST)));		    
+	}
+	
 	@GetMapping("/accounts")
 	public Flux<Account> listAccounts(
+			@RequestParam(required = false) String customerId,
 			@RequestParam(defaultValue = DEFAULT_LIMIT) Integer limit,
 			@RequestParam(defaultValue = DEFAULT_OFFSET) Integer offset) {
 		
-		Pageable pageable = toPageRequest(offset, limit);
-		return accountRepository.findAll(pageable);
+		final Pageable pagination = toPageRequest(offset, limit);
+		
+		if(customerId == null) {
+			return accountRepository.findAll(pagination);
+		}
+		
+		Mono<Customer> customer = customerRepository.findById(customerId);
+		return accountRepository.findByCustomer(customer, pagination);
 	}
 
 	@GetMapping("/accounts/{accountId}")

@@ -45,4 +45,17 @@ public class Customer {
 	@LastModifiedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
 	private Instant lastModifiedAt;
+	
+	public Customer(String email, String firstName, String lastName) {
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
+	
+	public Customer(String id, String email, String firstName, String lastName) {
+		this.id = id;
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
 }
