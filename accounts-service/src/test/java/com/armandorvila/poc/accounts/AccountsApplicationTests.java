@@ -39,6 +39,8 @@ import reactor.test.StepVerifier;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AccountsApplicationTests {
 
+	private static final BigDecimal POSITIVE_CREDIT = BigDecimal.valueOf(2000);
+	
 	@Autowired
 	private CustomerRepository customerRepository;
 	
@@ -75,7 +77,7 @@ public class AccountsApplicationTests {
 		final String accountId = accounts.blockFirst().getId();
 		
 		given(transactionsService.getAccountTransactions(anyString(), anyInt(), anyInt()))
-		  .willReturn(Flux.just(new AccountTransaction(accountId, new BigDecimal(200.0), "Some transaction")));
+		  .willReturn(Flux.just(new AccountTransaction(accountId, POSITIVE_CREDIT, "Some transaction")));
 	    
 		 webClient.get().uri("/accounts/{acountId}/transactions", accountId)
 						.accept(APPLICATION_JSON)
@@ -145,18 +147,17 @@ public class AccountsApplicationTests {
 	@Test  
 	public void should_CreateAccount_When_GivenValidCustomer() throws Exception {
 		final String customerId = customer.block().getId();
-		final BigDecimal initialCredit = new BigDecimal(2000.0);
 		final String description = "Some Account";
 		
 		given(transactionsService.registerTransaction(anyString(), anyString(), any(BigDecimal.class)))
 		 .willAnswer(invocation -> {
 			 String accountId = (String) invocation.getArguments()[0];
-			 return Mono.just(new AccountTransaction(accountId, initialCredit, description));
+			 return Mono.just(new AccountTransaction(accountId, POSITIVE_CREDIT, description));
 			 });
 				
 		webClient.post().uri("/accounts")
 					.accept(APPLICATION_JSON)
-					.syncBody(new AccountDTO(customerId, description, initialCredit))
+					.syncBody(new AccountDTO(customerId, description, POSITIVE_CREDIT))
 					.exchange()
 					.expectStatus().isCreated()
 					.expectBody()
@@ -171,12 +172,11 @@ public class AccountsApplicationTests {
 	}
 	
 	public void should_GetBadRequest_When_CustomerIdDoesNotExist() {
-		final BigDecimal initialCredit = BigDecimal.TEN;
 		final String description = "Some Account";
 		final String customerId = "someId";
 								
 		webClient.post().uri("/accounts")
-					.syncBody(new AccountDTO(customerId, description, initialCredit))
+					.syncBody(new AccountDTO(customerId, description, POSITIVE_CREDIT))
 					.exchange()
 					.expectStatus().isBadRequest()
 					.expectBody()

@@ -35,6 +35,10 @@ import reactor.core.publisher.Mono;
 @AutoConfigureWebTestClient
 public class AccountResourceTests {
 	
+	private static final BigDecimal POSITIVE_CREDIT = BigDecimal.valueOf(2000);
+	private static final BigDecimal NEGATIVE_CREDIT = BigDecimal.valueOf(-20.0);
+	private static final BigDecimal ZERO_CREDIT = BigDecimal.ZERO;
+	
 	private Customer customer = new Customer("57f4dadc6d138cf005711f4d", "some@mail.com", "some", "customer");
 	private Account account = new Account("57f4dadc6d138cf005711f4d", "Some account");
 	
@@ -48,56 +52,53 @@ public class AccountResourceTests {
 	private WebTestClient webClient;
 	
 	@Test
-	public void should_CreateNewAccount_When_ValidCustomer_Description_And_Credit() {
-		final BigDecimal initialCredit = BigDecimal.valueOf(2000);
-		
+	public void should_CreateNewAccount_When_ValidCustomer_Description_And_Credit() {		
 		final String description = "Personal bank account";
 		final String customerId = customer.getId();
 
 		final Account account = new Account(description, customer);
 		
-		given(accountService.openCustomerAccount(customerId, description, initialCredit))
+		given(accountService.openCustomerAccount(customerId, description, POSITIVE_CREDIT))
 		.willReturn(Mono.just(account));
 						
 		webClient.post().uri("/accounts")
 					.accept(APPLICATION_JSON)
-					.syncBody(new AccountDTO(customerId, description, initialCredit))
+					.syncBody(new AccountDTO(customerId, description, POSITIVE_CREDIT))
 					.exchange()
 					.expectStatus().isCreated()
 					.expectBody(Account.class)
 					.isEqualTo(account);
 		
-		then(accountService).should(times(1)).openCustomerAccount(customerId, description, initialCredit);
+		then(accountService).should(times(1)).openCustomerAccount(customerId, description, POSITIVE_CREDIT);
 	}
 	
 	@Test
 	public void should_CreateNewAccount_When_InitialCreditIsZero() {
-		final BigDecimal initialCredit = BigDecimal.ZERO;
 		final String description = "Some Account";
 		
 		final String customerId = customer.getId();
 		
 		final Account account = new Account(description, customer);
 		
-		given(accountService.openCustomerAccount(customerId, description, initialCredit))
+		given(accountService.openCustomerAccount(customerId, description, ZERO_CREDIT))
 		.willReturn(Mono.just(account));
 				
 		webClient.post().uri("/accounts")
 					.accept(APPLICATION_JSON)
-					.syncBody(new AccountDTO(customerId, description, initialCredit))
+					.syncBody(new AccountDTO(customerId, description, ZERO_CREDIT))
 					.exchange()
 					.expectStatus().isCreated()
 					.expectBody(Account.class)
 					.isEqualTo(account);
 		
-		then(accountService).should(times(1)).openCustomerAccount(customerId, description, initialCredit);
+		then(accountService).should(times(1)).openCustomerAccount(customerId, description, ZERO_CREDIT);
 	}
 	
 	@Test
 	public void should_GetBadRequest_When_EmptyDescription() {
 		webClient.post().uri("/accounts")
 					.accept(APPLICATION_JSON)
-					.syncBody(new AccountDTO(customer.getId(), "", BigDecimal.TEN))
+					.syncBody(new AccountDTO(customer.getId(), "", POSITIVE_CREDIT))
 					.exchange()
 					.expectStatus().isBadRequest()
 					.expectBody()
@@ -121,7 +122,7 @@ public class AccountResourceTests {
 	@Test
 	public void should_GetBadRequest_When_NegativeInitialCredit() {
 		webClient.post().uri("/accounts")
-					.syncBody(new AccountDTO(customer.getId(), "some desc", new BigDecimal(-20.0)))
+					.syncBody(new AccountDTO(customer.getId(), "some desc", NEGATIVE_CREDIT))
 					.exchange()
 					.expectStatus().isBadRequest()
 					.expectBody()
@@ -133,7 +134,7 @@ public class AccountResourceTests {
 	@Test
 	public void should_GetBadRequest_When_EmptyCustomerId() {
 		webClient.post().uri("/accounts")
-					.syncBody(new AccountDTO("", "some desc", new BigDecimal(2000.0)))
+					.syncBody(new AccountDTO("", "some desc", POSITIVE_CREDIT))
 					.exchange()
 					.expectStatus().isBadRequest()
 					.expectBody()
@@ -144,21 +145,20 @@ public class AccountResourceTests {
 	
 	@Test
 	public void should_GetBadRequest_When_CustomerIdDoesNotExist() {
-		final BigDecimal initialCredit = BigDecimal.TEN;
 		final String description = "Some Account";
 		final String customerId = "someId";
 								
-		given(accountService.openCustomerAccount(customerId, description, initialCredit))
+		given(accountService.openCustomerAccount(customerId, description, POSITIVE_CREDIT))
 		.willReturn(Mono.error(new CustomerNotFoundExeption("Customer not found")));
 		
 		webClient.post().uri("/accounts")
-					.syncBody(new AccountDTO(customerId, description, initialCredit))
+					.syncBody(new AccountDTO(customerId, description, POSITIVE_CREDIT))
 					.exchange()
 					.expectStatus().isBadRequest()
 					.expectBody()
 					.isEmpty();
 		
-		then(accountService).should(times(1)).openCustomerAccount(customerId, description, initialCredit);
+		then(accountService).should(times(1)).openCustomerAccount(customerId, description, POSITIVE_CREDIT);
 	}
 	
 	@Test  

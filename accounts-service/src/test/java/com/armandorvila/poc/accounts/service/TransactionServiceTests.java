@@ -23,6 +23,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 public class TransactionServiceTests {
+	
+	private static final BigDecimal POSITIVE_CREDIT = BigDecimal.valueOf(2000);
 
 	private static final String ACCOUNT_ID = "5ab698238d14c64fc85b3d38";
 	
@@ -52,7 +54,7 @@ public class TransactionServiceTests {
 	
 	@Test
 	public void should_GetAccountTransactions_When_ServiceInstnaceFound() {
-		AccountTransaction transaction = new AccountTransaction(ACCOUNT_ID, new BigDecimal(0), "Some tx");
+		AccountTransaction transaction = new AccountTransaction(ACCOUNT_ID, POSITIVE_CREDIT, "Some tx");
 		ServiceInstance instance = mock(ServiceInstance.class);
 		
 		given(loadBalancer.choose(TransactionsService.TRANSACTIONS_SERVICE_ID))
@@ -75,7 +77,7 @@ public class TransactionServiceTests {
 	
 	@Test
 	public void should_RegisterTransaction_When_ServiceInstnaceFound() {
-		AccountTransaction transaction = new AccountTransaction(ACCOUNT_ID, new BigDecimal(0), "Some tx");
+		AccountTransaction transaction = new AccountTransaction(ACCOUNT_ID, POSITIVE_CREDIT, "Some tx");
 		
 		ServiceInstance instance = mock(ServiceInstance.class);
 		

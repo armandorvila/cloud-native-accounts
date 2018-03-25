@@ -27,6 +27,9 @@ import reactor.test.StepVerifier;
 
 public class AccountServiceTests {
 	
+	private static final BigDecimal POSITIVE_CREDIT = BigDecimal.valueOf(2000);
+	private static final BigDecimal ZERO_CREDIT = BigDecimal.ZERO;
+	
 	private Customer customer = new Customer("57f4dadc6d138cf005711f4d", "some@mail.com", "some", "customer");
 	private Account account = new Account("57f4dadc6d138cf005711f4d", "Some account");
 
@@ -48,62 +51,59 @@ public class AccountServiceTests {
 	
 	@Test
 	public void should_OpenAccount_When_ValidCustomer_Description_And_Credit() {
-		final BigDecimal initialCredit = new BigDecimal(2000.0);
 		final String description = "Some Account";
 		
 		final String customerId = customer.getId();
 		final String accountId = account.getId();
 		
-		final AccountTransaction transaction = new AccountTransaction(accountId, initialCredit, description);
-		final Account account = new Account(accountId, description, customer, initialCredit, null, null);
+		final AccountTransaction transaction = new AccountTransaction(accountId, POSITIVE_CREDIT, description);
+		final Account account = new Account(accountId, description, customer, POSITIVE_CREDIT, null, null);
 		
 		given(customerRepository.findById(customerId)).willReturn(Mono.just(customer));
 		given(accountRepository.save(any())).willReturn(Mono.just(account));
 		
-		given(transactionsService.registerTransaction(accountId, description, initialCredit))
+		given(transactionsService.registerTransaction(accountId, description, POSITIVE_CREDIT))
 		.willReturn(Mono.just(transaction));
 		
-		StepVerifier.create(accountService.openCustomerAccount(customerId, description, initialCredit))
+		StepVerifier.create(accountService.openCustomerAccount(customerId, description, POSITIVE_CREDIT))
 		.expectNext(account)
 		.verifyComplete();
 		
 		then(customerRepository).should(times(1)).findById(customerId);
-		then(transactionsService).should(times(1)).registerTransaction(account.getId(), description, initialCredit);
+		then(transactionsService).should(times(1)).registerTransaction(account.getId(), description, POSITIVE_CREDIT);
 		then(accountRepository).should(times(2)).save(any());
 	}
 	
 	@Test
 	public void should_OpenAccountWithoutTransaction_When_InitialCreditZero() {
-		final BigDecimal initialCredit = BigDecimal.ZERO;
 		final String description = "Some Account";
 		
 		final String customerId = customer.getId();
 		final String accountId = account.getId();
 		
-		final Account account = new Account(accountId, description, customer, initialCredit, null, null);
+		final Account account = new Account(accountId, description, customer, ZERO_CREDIT, null, null);
 		
 		given(customerRepository.findById(customerId)).willReturn(Mono.just(customer));
 		given(accountRepository.save(any())).willReturn(Mono.just(account));
 				
-		StepVerifier.create(accountService.openCustomerAccount(customerId, description, initialCredit))
+		StepVerifier.create(accountService.openCustomerAccount(customerId, description, ZERO_CREDIT))
 		.expectNext(account)
 		.verifyComplete();
 		
 		then(customerRepository).should(times(1)).findById(customer.getId());
-		then(transactionsService).should(never()).registerTransaction(account.getId(), description, initialCredit);
+		then(transactionsService).should(never()).registerTransaction(account.getId(), description, ZERO_CREDIT);
 		then(accountRepository).should(times(1)).save(any());
 	}
 	
 	@Test
 	public void should_GetBadRequest_When_CustomerIdDoesNotExist() {
-		final BigDecimal initialCredit = BigDecimal.ZERO;
 		final String description = "Some Account";
 		
 		final String customerId = "someId";
 				
 		given(customerRepository.findById(customerId)).willReturn(Mono.empty());
 		
-		StepVerifier.create(accountService.openCustomerAccount(customerId, description, initialCredit))
+		StepVerifier.create(accountService.openCustomerAccount(customerId, description, ZERO_CREDIT))
 		.expectError(CustomerNotFoundExeption.class);
 		
 		then(customerRepository).should(times(1)).findById(customerId);
