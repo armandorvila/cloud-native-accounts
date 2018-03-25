@@ -93,7 +93,7 @@ $ curl http://localhost/api/accounts?customerId=5ab7b1e41fe5db3ac0945a10
 Additionally, a small user interface has been implemented, which will be served in the port 5000 after running the docker compose. 
 
 **NOTE:** In order to run the provided docker compose, the following ports must be free:
-* 80 for API Gateway
+* 80 for the API Gateway
 * 8761 for Eureka
 * 5000 for User interface
 
