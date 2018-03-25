@@ -47,7 +47,7 @@ The following table contains the system endpoints:
 | Endpoint | Method | Scope | Description |
 | ------------ | -------------- | -------------- | ------- |
 | `/api/accounts` | POST | Public | Creates a new account associated to the specified customer  |
-| `/api/accounts` | GET | Public | Retrieves all the accounts, it implements a customerId filter and limit/offset pagination  |
+| `/api/accounts?customerId={customerId}` | GET | Public | Retrieves all the accounts, it implements a customerId filter and limit/offset pagination  |
 | `/api/accounts/{accountId}` | GET | Public | Retrieves an specific account given the ID  |
 | `/api/accounts/{accountId}/transactions` | GET | Public | Retrieves all the transactions of a given account  |
 | `/transactions?accountId={accountId}` | GET | Internal | Retrieves all the transactions of an account, it implements offset/size pagination|
