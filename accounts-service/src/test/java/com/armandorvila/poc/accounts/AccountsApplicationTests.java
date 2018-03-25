@@ -9,6 +9,8 @@ import static org.mockito.Mockito.times;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 
+import java.math.BigDecimal;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,17 +23,24 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.armandorvila.poc.accounts.domain.Account;
 import com.armandorvila.poc.accounts.domain.AccountTransaction;
+import com.armandorvila.poc.accounts.domain.Customer;
 import com.armandorvila.poc.accounts.exception.ServiceNotFoundExeption;
 import com.armandorvila.poc.accounts.repository.AccountRepository;
+import com.armandorvila.poc.accounts.repository.CustomerRepository;
+import com.armandorvila.poc.accounts.resource.dto.AccountDTO;
 import com.armandorvila.poc.accounts.service.TransactionsService;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AccountsApplicationTests {
 
+	@Autowired
+	private CustomerRepository customerRepository;
+	
 	@Autowired
 	private AccountRepository accountRepository;
 	
@@ -41,14 +50,21 @@ public class AccountsApplicationTests {
 	@Autowired
 	protected WebTestClient webClient;
 	
+	private Mono<Customer> customer;
+	
 	private Flux<Account> accounts;
 	
 	@Before
 	public void setUp() {
+		customer = this.customerRepository.deleteAll()
+				.then(customerRepository.save(new Customer("some@email.com", "some", "customer")));
+		
+		StepVerifier.create(customer).expectNextCount(1).verifyComplete();
+		
 		accounts = this.accountRepository.deleteAll()
 				.thenMany(accountRepository.saveAll(asList(
-						new Account("Some account"),
-						new Account("Some other account"))));
+						new Account("Some account", customer.block()),
+						new Account("Some other account", customer.block()))));
 		
 		StepVerifier.create(accounts).expectNextCount(2).verifyComplete();
 	}
@@ -98,4 +114,48 @@ public class AccountsApplicationTests {
 		 
 		 then(transactionsService).should(times(1)).getAccountTransactions("some", 100, 0);
 	}
+	
+	@Test  
+	public void should_GetEmptyAccountsList_When_CustomerIdDoesNotExist() throws Exception {
+		 webClient.get().uri("/accounts?customerId={customerId}", "someID")
+						.accept(APPLICATION_JSON)
+						.exchange()
+						.expectStatus().isOk()
+						.expectHeader().contentType(APPLICATION_JSON_UTF8)
+						.expectBodyList(Account.class)
+						.hasSize(0);
+	}
+	
+	@Test  
+	public void should_GetCustomerAccounts_When_GivenValidCustomerId() throws Exception {
+		final Customer customer = this.customer.block();
+		 webClient.get().uri("/accounts?customerId={customerId}", customer.getId())
+						.accept(APPLICATION_JSON)
+						.exchange()
+						.expectStatus().isOk()
+						.expectHeader().contentType(APPLICATION_JSON_UTF8)
+						.expectBodyList(Account.class)
+						.hasSize(2);
+	}
+	
+	@Test  
+	public void should_CreateAccount_When_GivenValidCustomer() throws Exception {
+		final Customer customer = this.customer.block();
+		
+		final AccountDTO accountDTO = new AccountDTO(customer.getId(), "Some Account", 
+				new BigDecimal(2000.0));
+				
+		webClient.post().uri("/accounts")
+					.accept(APPLICATION_JSON)
+					.syncBody(accountDTO)
+					.exchange()
+					.expectStatus().isCreated()
+					.expectBody()
+					.jsonPath("$.id").isNotEmpty()
+					.jsonPath("$.createdAt").isNotEmpty()
+					.jsonPath("$.lastModifiedAt").isNotEmpty()
+					.jsonPath("$.description").isEqualTo(accountDTO.getDescription())
+					.jsonPath("$.customer").isNotEmpty()
+					.jsonPath("$.customer.id").isEqualTo(customer.getId());
+	}				
 }

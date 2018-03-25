@@ -2,12 +2,13 @@ package com.armandorvila.poc.accounts.domain;
 
 import java.time.Instant;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -21,17 +22,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"createdAt", "lastModifiedAt"})
-@Document(collection = "accounts")
-public class Account {
-	
+@Document(collection = "customers")
+public class Customer {
+
 	@Id
 	private String id;
 	
-	@NotEmpty(message = "This field is required")
-	private String description;
+	@Email
+	@Indexed(unique = true)
+	private String email;
 	
-	@DBRef
-	private Customer customer;
+	@NotEmpty(message = "This field is required")
+	private String firstName;
+	
+	@NotEmpty(message = "This field is required")
+	private String lastName; 
 	
 	@CreatedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -41,13 +46,16 @@ public class Account {
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
 	private Instant lastModifiedAt;
 	
-	public Account(String description, Customer customer) {
-		this.description = description;
-		this.customer = customer;
+	public Customer(String email, String firstName, String lastName) {
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
 	}
 	
-	public Account(String id, String description) {
+	public Customer(String id, String email, String firstName, String lastName) {
 		this.id = id;
-		this.description = description;
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
 	}
 }

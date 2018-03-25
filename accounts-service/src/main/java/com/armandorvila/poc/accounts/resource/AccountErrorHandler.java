@@ -15,11 +15,11 @@ public class AccountErrorHandler extends DefaultErrorAttributes {
 	@Override
 	public Map<String, Object> getErrorAttributes(ServerRequest request,
 			boolean includeStackTrace) {
+		
 		Map<String, Object> errorAttributes = super.getErrorAttributes(request, includeStackTrace);
 		Throwable error = super.getError(request);
 		
 		if(error instanceof ServiceNotFoundExeption) {
-			
 			errorAttributes.put("status", HttpStatus.BAD_GATEWAY.value());
 			errorAttributes.put("error", HttpStatus.BAD_GATEWAY.getReasonPhrase());
 		}
