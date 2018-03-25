@@ -1,10 +1,10 @@
 package com.armandorvila.poc.accounts.domain;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -19,16 +19,23 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class AccountTransaction {
 
-	@Id
+	@NotEmpty
 	private String id;
 	
+	@NotEmpty
+	private String accountId;
+	
+	@NotEmpty
 	private String description;
 	
-	@CreatedDate
+	@NotNull
+	private BigDecimal value;
+	
+	private BigDecimal balance;
+	
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
 	private Instant createdAt;
 
-	@LastModifiedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
 	private Instant lastModifiedAt;
 	

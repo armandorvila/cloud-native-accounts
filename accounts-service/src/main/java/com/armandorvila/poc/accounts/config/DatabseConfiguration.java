@@ -26,7 +26,7 @@ public class DatabseConfiguration {
 	@Autowired
 	private AccountRepository accountRepository;
 
-	/* This is going to get duplicated when running more than one instance.*/
+	/* This is going to get duplicated when running more than one instance. That could be fixed with a profile check.*/
 	@PostConstruct
 	public void initializeDatabase() {
 		final Customer customer = new Customer("some@email.com", "some", "customer");

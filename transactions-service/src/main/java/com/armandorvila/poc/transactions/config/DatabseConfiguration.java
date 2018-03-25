@@ -1,5 +1,6 @@
 package com.armandorvila.poc.transactions.config;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
@@ -20,12 +21,16 @@ public class DatabseConfiguration {
 	@Autowired
     private TransactionRepository transactionRepository;
 	
+	/* This is going to get duplicated when running more than one instance. That could be fixed with a profile check.*/
 	@PostConstruct
 	public void initializeDatabase() {
-		//This is going to get duplicated when running more than one instance.
 		transactionRepository.saveAll(Arrays.asList(
-				new Transaction("Some transaction"),
-				new Transaction("Some other transaction")
+				new Transaction("5ab698238d14c64fc85b3d38", "Some transaction", new BigDecimal(-10.0), new BigDecimal(8000.00)),
+				new Transaction("5ab698238d14c64fc85b3d38", "Some other transaction", new BigDecimal(-10.0), new BigDecimal(7990.00)),
+				new Transaction("5ab698238d14c64fc85b3d38", "Some transaction", new BigDecimal(-10.0), new BigDecimal(7980.00)),
+				new Transaction("5ab698238d14c64fc85b3d38", "Some other transaction", new BigDecimal(-10.0), new BigDecimal(7970.00)),
+				new Transaction("57b698238d14c64fc85b3d39", "Some transaction", new BigDecimal(-10.0), new BigDecimal(7960.00)),
+				new Transaction("57b698238d14c64fc85b3d39", "Some other transaction", new BigDecimal(-10.0), new BigDecimal(7950.00))
 				)).subscribe();
 	}
 }

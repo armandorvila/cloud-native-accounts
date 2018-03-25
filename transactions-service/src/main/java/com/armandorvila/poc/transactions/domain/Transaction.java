@@ -1,10 +1,13 @@
 package com.armandorvila.poc.transactions.domain;
 
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -17,29 +20,44 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = { "createdAt", "lastModifiedAt" })
+@EqualsAndHashCode
 @Document(collection = "transactions")
 public class Transaction {
 
 	@Id
 	private String id;
+	
+	@NotEmpty
+	private String accountId;
 
+	@NotEmpty
 	private String description;
+	
+	@NotNull
+	private BigDecimal value;
+	
+	private BigDecimal balance;
 
 	@CreatedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
-	private Instant createdAt;
-
-	@LastModifiedDate
-	@JsonFormat(shape = JsonFormat.Shape.STRING)
-	private Instant lastModifiedAt;
-
-	public Transaction(String description) {
+	private LocalDateTime timestamp;
+	
+	public Transaction(String accountId, String description, BigDecimal value, BigDecimal balance) {
+		this.accountId = accountId;
 		this.description = description;
+		this.value = value;
+		this.balance = balance;
 	}
 	
-	public Transaction(String id, String description) {
-		this.id = id;
+	public Transaction(String accountId, String description, BigDecimal value, BigDecimal balance, LocalDateTime timestamp) {
+		this.accountId = accountId;
 		this.description = description;
+		this.value = value;
+		this.balance = balance;
+		this.timestamp = timestamp;
+	}
+	
+	public void updateBalance(BigDecimal lastBalnace) {
+		this.balance = lastBalnace.add(this.value);
 	}
 }

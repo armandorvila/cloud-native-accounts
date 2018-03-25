@@ -1,0 +1,4 @@
+#Disable actuator endpoints  
+management:
+  endpoints:
+    enabled-by-default: false
