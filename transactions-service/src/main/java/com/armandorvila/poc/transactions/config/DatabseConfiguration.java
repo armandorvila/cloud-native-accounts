@@ -28,12 +28,12 @@ public class DatabseConfiguration {
 	public void initializeDatabase() {
 		transactionRepository.deleteAll().thenMany(
 		transactionRepository.saveAll(Arrays.asList(
-				new Transaction("5ab698238d14c64fc85b3d38", "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(8000.00)),
-				new Transaction("5ab698238d14c64fc85b3d38", "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7990.00)),
-				new Transaction("5ab698238d14c64fc85b3d38", "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7980.00)),
-				new Transaction("5ab698238d14c64fc85b3d38", "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7970.00)),
-				new Transaction("57b698238d14c64fc85b3d39", "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7960.00)),
-				new Transaction("57b698238d14c64fc85b3d39", "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7950.00))
+				new Transaction("5ab8086f1f11cd453ce85c23", "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(8000.00)),
+				new Transaction("5ab8086f1f11cd453ce85c23", "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7990.00)),
+				new Transaction("5ab8086f1f11cd453ce85c23", "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7980.00)),
+				new Transaction("5ab8086f1f11cd453ce85c23", "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7970.00)),
+				new Transaction("5ab8086f1f11cd453ce85c24", "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7960.00)),
+				new Transaction("5ab8086f1f11cd453ce85c24", "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7950.00))
 				))).subscribe();
 	}
 }

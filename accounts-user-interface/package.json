@@ -1,0 +1,13 @@
+{
+  "name": "credit-consumers-gui",
+  "version": "0.0.1",
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "armandorvila",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-connect": "^5.2.0"
+  }
+}

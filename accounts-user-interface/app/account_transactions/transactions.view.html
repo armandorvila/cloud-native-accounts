@@ -1,0 +1,81 @@
+<section class="row">
+
+    <h2>Account Transactions</h2>
+
+    <p>Transactions linked to the account "{{account.description}}" with id {{account.id}}</p>
+
+
+</section>
+
+<section class="row col-md-11" data-ng-init="init()">
+
+
+    <hr />
+    <div class="row">
+        <div class="text-right col-md-5 text-info pull-right">
+            <span>You are currently on page {{currentPage}}</span>
+        </div>
+
+        <div class="text-left col-md-5 text-info pull-left">
+            <form class="form">
+                <label class="label-control" for="pageSize2">Page size:</label>
+                <select data-ng-change="loadPage()" style="height: 80%; width: 25%;" value="10" id="pageSize2" class="form-control text-info"
+                    data-ng-model="selectedPageSize" ng-options="pageSize for pageSize in pageSizes">
+
+                </select>
+            </form>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <uib-pager total-items="100000000000" ng-model="currentPage" ng-click="loadPage()"></uib-pager>
+
+        <div class="alert alert-info" role="alert" data-ng-show="paginationEnded">
+            <p>
+                You have already loaded all the acount pages.
+            </p>
+        </div>
+       
+    </div>
+
+    <hr/>
+
+    <table class="table table-striped" data-show-filter="true">
+        <thead class="pich-table-header">
+            <tr>
+                <th>
+                    <a href data-ng-click="loadPage()"> Description</a>
+                </th>
+                <th>
+                    <a href data-ng-click="loadPage()">Value</a>
+                </th>
+                <th>
+                    <a href data-ng-click="loadPage()"> Balance</a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="tx in transactions | filter:searchLink">
+                <td>
+                    <p>{{tx.description | limitTo:20}}</p>
+                </td>
+                <td>
+                        <p>{{tx.value | limitTo:20}}</p>
+                    </td>
+                <td>
+                    <p>{{tx.balance | limitTo:20}}</p>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+
+    <div data-ng-show="consumers.length==0" class="alert alert-warning" role="alert">No accounts found.</div>
+
+<hr/>
+
+<a class="btn btn-primary pull-right"  data-dismiss="modal" href="/#/acounts">
+    Go back to Accounts
+</a>
+
+</section>
