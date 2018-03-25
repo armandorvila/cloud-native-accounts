@@ -1,10 +1,11 @@
 package com.armandorvila.poc.transactions.resource;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 import javax.validation.Valid;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,17 +41,15 @@ public class TransactionResource {
 	}
 	
 	@PostMapping("/transactions")
-	@ResponseStatus(HttpStatus.CREATED)
+	@ResponseStatus(CREATED)
 	public Mono<@Valid Transaction> registerTransaction(@Valid @RequestBody Transaction transaction) {
 		final String accountId = transaction.getAccountId();
 		
-		return transactionRepository.findFirstByAccountIdOrderByTimestampDesc(accountId).limitRequest(1).elementAt(0)
-		.map(tx -> {
-			transaction.updateBalance(tx.getBalance());
-			return transaction;
-		}).flatMap(tx -> {
-			return transactionRepository.save(tx);
-		});
+		return transactionRepository.findFirstByAccountIdOrderByTimestampDesc(accountId)
+				.limitRequest(1)
+				.elementAt(0, transaction)//In this case there is no last transaction.
+				.map(transaction::updateBalance)
+				.flatMap(transactionRepository::save);
 	}
 	
 	private Pageable toPageRequest(int offset, int limit) {

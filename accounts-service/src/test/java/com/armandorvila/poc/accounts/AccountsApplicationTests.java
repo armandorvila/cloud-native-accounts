@@ -1,6 +1,7 @@
 package com.armandorvila.poc.accounts;
 
 import static java.util.Arrays.asList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -71,11 +72,11 @@ public class AccountsApplicationTests {
 	
 	@Test  
 	public void should_GetAccountTransactions_WhenGivenValidAccountId() {
-		given(transactionsService.getAccountTransactions(anyString(), anyInt(), anyInt()))
-		  .willReturn(Flux.just(new AccountTransaction("Some transaction")));
-	    
 		final String accountId = accounts.blockFirst().getId();
 		
+		given(transactionsService.getAccountTransactions(anyString(), anyInt(), anyInt()))
+		  .willReturn(Flux.just(new AccountTransaction(accountId, new BigDecimal(200.0), "Some transaction")));
+	    
 		 webClient.get().uri("/accounts/{acountId}/transactions", accountId)
 						.accept(APPLICATION_JSON)
 						.exchange()
@@ -85,34 +86,37 @@ public class AccountsApplicationTests {
 						.expectBodyList(AccountTransaction.class)
 						.hasSize(1);
 		 
-		 then(transactionsService)
-		 .should(times(1)).getAccountTransactions(anyString(), anyInt(), anyInt());
+		 then(transactionsService).should(times(1)).getAccountTransactions(anyString(), anyInt(), anyInt());
 	}
 	
 	@Test  
-	public void should_GetBadGateway_WhenTransactionServiceNotFound() throws Exception {		
-		given(transactionsService.getAccountTransactions("some", 100, 0))
+	public void should_GetBadGateway_WhenTransactionServiceNotFound() throws Exception {
+		final String accountId = accounts.blockFirst().getId();
+		
+		given(transactionsService.getAccountTransactions(accountId, 100, 0))
 		  .willThrow(ServiceNotFoundExeption.class);
 	    
-		 webClient.get().uri("/accounts/some/transactions")
+		 webClient.get().uri("/accounts/{accountId}/transactions", accountId)
 						.accept(APPLICATION_JSON)
 						.exchange()
 						.expectStatus().isEqualTo(HttpStatus.BAD_GATEWAY);
 		 
-		 then(transactionsService).should(times(1)).getAccountTransactions("some", 100, 0);
+		 then(transactionsService).should(times(1)).getAccountTransactions(accountId, 100, 0);
 	}
 	
 	@Test  
-	public void should_GetInternalServerError_WhenIllegalArgumentException() throws Exception {		
-		given(transactionsService.getAccountTransactions("some", 100, 0))
+	public void should_GetInternalServerError_WhenIllegalArgumentException() throws Exception {
+		final String accountId = accounts.blockFirst().getId();
+		
+		given(transactionsService.getAccountTransactions(accountId, 100, 0))
 		  .willThrow(IllegalArgumentException.class);
 	    
-		 webClient.get().uri("/accounts/some/transactions")
+		 webClient.get().uri("/accounts/{accountId}/transactions", accountId)
 						.accept(APPLICATION_JSON)
 						.exchange()
 						.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		 
-		 then(transactionsService).should(times(1)).getAccountTransactions("some", 100, 0);
+		 then(transactionsService).should(times(1)).getAccountTransactions(accountId, 100, 0);
 	}
 	
 	@Test  
@@ -140,22 +144,43 @@ public class AccountsApplicationTests {
 	
 	@Test  
 	public void should_CreateAccount_When_GivenValidCustomer() throws Exception {
-		final Customer customer = this.customer.block();
+		final String customerId = customer.block().getId();
+		final BigDecimal initialCredit = new BigDecimal(2000.0);
+		final String description = "Some Account";
 		
-		final AccountDTO accountDTO = new AccountDTO(customer.getId(), "Some Account", 
-				new BigDecimal(2000.0));
+		given(transactionsService.registerTransaction(anyString(), anyString(), any(BigDecimal.class)))
+		 .willAnswer(invocation -> {
+			 String accountId = (String) invocation.getArguments()[0];
+			 return Mono.just(new AccountTransaction(accountId, initialCredit, description));
+			 });
 				
 		webClient.post().uri("/accounts")
 					.accept(APPLICATION_JSON)
-					.syncBody(accountDTO)
+					.syncBody(new AccountDTO(customerId, description, initialCredit))
 					.exchange()
 					.expectStatus().isCreated()
 					.expectBody()
 					.jsonPath("$.id").isNotEmpty()
 					.jsonPath("$.createdAt").isNotEmpty()
 					.jsonPath("$.lastModifiedAt").isNotEmpty()
-					.jsonPath("$.description").isEqualTo(accountDTO.getDescription())
+					.jsonPath("$.description").isEqualTo(description)
 					.jsonPath("$.customer").isNotEmpty()
-					.jsonPath("$.customer.id").isEqualTo(customer.getId());
-	}				
+					.jsonPath("$.customer.id").isEqualTo(customerId);
+		
+		 then(transactionsService).should(times(1)).registerTransaction(anyString(), anyString(), any(BigDecimal.class));
+	}
+	
+	public void should_GetBadRequest_When_CustomerIdDoesNotExist() {
+		final BigDecimal initialCredit = BigDecimal.TEN;
+		final String description = "Some Account";
+		final String customerId = "someId";
+								
+		webClient.post().uri("/accounts")
+					.syncBody(new AccountDTO(customerId, description, initialCredit))
+					.exchange()
+					.expectStatus().isBadRequest()
+					.expectBody()
+					.isEmpty();
+	}
 }
+

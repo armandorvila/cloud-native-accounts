@@ -68,6 +68,25 @@ public class TransactionsResourceTest {
 	}
 	
 	@Test  
+	public void should_RegisterNewTransaction_WhenTransactionIsValid_AndTheAccountIsNew() throws Exception {
+		given(transactionRepository.findFirstByAccountIdOrderByTimestampDesc(transaction.getAccountId()))
+		  .willReturn(Flux.empty());
+		
+		given(transactionRepository.save(any(Transaction.class)))
+		  .willAnswer(invocation -> Mono.just(invocation.getArguments()[0]));
+		
+		 Transaction result = webClient.post().uri("/transactions")
+						.accept(APPLICATION_JSON)
+						.syncBody(transaction)
+						.exchange()
+						.expectStatus().isCreated()
+						.expectBody(Transaction.class)
+						.returnResult().getResponseBody();
+		 
+		 assertThat(result.getBalance()).isEqualTo(transaction.getValue());
+	}
+	
+	@Test  
 	public void should_GetBadRequestn_WhenTransactionValueIsEmpty() throws Exception {	
 		transaction.setValue(null);
 		 webClient.post().uri("/transactions")

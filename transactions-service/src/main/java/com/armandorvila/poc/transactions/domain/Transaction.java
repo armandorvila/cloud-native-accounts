@@ -57,7 +57,14 @@ public class Transaction {
 		this.timestamp = timestamp;
 	}
 	
-	public void updateBalance(BigDecimal lastBalnace) {
-		this.balance = lastBalnace.add(this.value);
+	public Transaction updateBalance(Transaction lastTransaction) {
+		if(lastTransaction == this) {
+			this.balance = this.value;
+		}
+		else {
+			this.balance = lastTransaction.getBalance().add(this.value);
+		}
+		
+		return this;
 	}
 }

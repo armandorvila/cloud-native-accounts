@@ -14,6 +14,6 @@ management:
         include: '*'
         
 spring:
-  profiles:
-    active:
- #   - prod Un comment this to work against an actual mongodb during development.
+  autoconfigure:
+    exclude: #Un comment the line bellow to disable embedded mongo 
+    # - org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration 

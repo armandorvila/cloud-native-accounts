@@ -1,7 +1,7 @@
 package com.armandorvila.poc.accounts.domain;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -34,12 +34,11 @@ public class AccountTransaction {
 	private BigDecimal balance;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
-	private Instant createdAt;
-
-	@JsonFormat(shape = JsonFormat.Shape.STRING)
-	private Instant lastModifiedAt;
+	private LocalDateTime timestamp;
 	
-	public AccountTransaction(String description) {
+	public AccountTransaction(String accountId, BigDecimal value, String description) {
+		this.accountId = accountId;
+		this.value = value;
 		this.description = description;
 	}
 }

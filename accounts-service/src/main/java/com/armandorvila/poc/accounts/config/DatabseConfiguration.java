@@ -2,6 +2,7 @@ package com.armandorvila.poc.accounts.config;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 
@@ -15,10 +16,14 @@ import com.armandorvila.poc.accounts.domain.Customer;
 import com.armandorvila.poc.accounts.repository.AccountRepository;
 import com.armandorvila.poc.accounts.repository.CustomerRepository;
 
+import reactor.core.publisher.Flux;
+
 @Configuration
 @EnableMongoAuditing
 @EnableReactiveMongoRepositories("com.armandorvila.poc.accounts.repository")
 public class DatabseConfiguration {
+
+	private static final String DEFAULT_CUTOMER_ID = "5ab7b1e41fe5db3ac0945a10";
 
 	@Autowired
 	private CustomerRepository customerRepository;
@@ -26,14 +31,20 @@ public class DatabseConfiguration {
 	@Autowired
 	private AccountRepository accountRepository;
 
-	/* This is going to get duplicated when running more than one instance. That could be fixed with a profile check.*/
+	/*
+	 * Development only.
+	 */
 	@PostConstruct
 	public void initializeDatabase() {
-		final Customer customer = new Customer("some@email.com", "some", "customer");
+		final Customer customer = new Customer(DEFAULT_CUTOMER_ID, "armando.ramirez.villa@email.com", "Armando", "Ramirez Vila");
 
-		customerRepository.save(customer)
-				.doOnSuccess(c -> accountRepository.saveAll(accounts(customer)))
-				.subscribe();
+		 customerRepository.deleteAll()
+			.thenMany(customerRepository.save(customer).flux()
+				.flatMap(initializeAccounts())).subscribe();
+	}
+
+	private Function<Customer,Flux<Account>> initializeAccounts() {
+		return c -> accountRepository.deleteAll().thenMany(accountRepository.saveAll(accounts(c)));
 	}
 
 	private List<Account> accounts(Customer customer) {
