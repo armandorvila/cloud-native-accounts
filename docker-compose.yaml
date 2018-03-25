@@ -35,7 +35,7 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://database:27017/transactions
     depends_on:
       - discovery-service
-      - cloudnative-accounts-mongodb
+      - database
 
   
   accounts-service:
@@ -52,7 +52,7 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://database:27017/transactions
     depends_on:
       - discovery-service
-      - cloudnative-accounts-mongodb
+      - database
       
   
   edge-service:
