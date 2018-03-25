@@ -1,6 +1,6 @@
 # Cloud Native Accounts System
 
-### Technology and concepts:
+### Technologies and concepts:
 
 * Java 8
 * Spring Framework 5
@@ -12,7 +12,7 @@
 * Docker and Docker compose
 * Continuous Integration
 
-The following are out of the scope so far:
+The following areas are out of the scope so far:
 
 * Security
 * Event Sourcing
@@ -32,7 +32,7 @@ The following diagram shows the contexts, entities and relations:
 
 ![Domain model](./assets/Cloud_Native_Accounts_Domain.png)
 
-*NOTE*: For the sake of simplicity, customers has been modeled as a secondary entity within the accounts bounded context, but it should be an entire bounded context.
+*NOTE*: For the sake of simplicity, the customer has been modeled as a secondary entity within the accounts bounded context, but it should be an entire bounded context in a more complete version of this system.
 
 ### Microservices
 
@@ -46,29 +46,45 @@ The following table contains the system endpoints:
 
 | Endpoint | Method | Scope | Description |
 | ------------ | -------------- | -------------- | ------- |
-| `/accounts` | POST | Public | Creates a new account associated to the specified customer.  |
-| `/accounts` | GET | Public | Retrieves all the accounts, it implements a customerId filter and limit/offset pagination.  |
-| `/accounts/{accountId}` | GET | Public | Retrieves an specific account given the ID.  |
-| `/accounts/{accountId}/transactions` | GET | Public | Retrieves all the transactions of a given account.  |
-| `/transactions` | GET | Internal | Retrieves all the transactions, it implements offset/size pagination.|
-| `/transactions/{transactionId}` | GET | Internal | Retrieves a specific transaction given the transaction id.  |
+| `/api/accounts` | POST | Public | Creates a new account associated to the specified customer  |
+| `/api/accounts?customerId={customerId}` | GET | Public | Retrieves all the accounts, it implements a customerId filter and limit/offset pagination  |
+| `/api/accounts/{accountId}` | GET | Public | Retrieves an specific account given the ID  |
+| `/api/accounts/{accountId}/transactions` | GET | Public | Retrieves all the transactions of a given account  |
+| `/transactions?accountId={accountId}` | GET | Internal | Retrieves all the transactions of an account, it implements offset/size pagination|
 
 ### Running
 
 Considerations:
 
-* For the sake of simplicity, the microservices are built using in memory MongoDB data bases. 
-* A docker compose has been provided to run the entire system.
+* When run as regular Java applications, each service is built using an in memory MongoDB data bases.
+* A docker compose has been provided to run the entire system, including an actual MongoDB database.
 * The project must be built before running the system.
-* When the system runs there are no accounts.
-* When the system runs there are some customers loaded in the accounts database. 
+* When the system runs there are some accounts and customers loaded in the database.
+* When the system runs, it might take a couple of minutes until the services are registered.
 
+
+Running with docker and docker compose:
 
 ```bash
 $ mvn clean install
 $ docker-compose up --build
-$ curl http://localhost:8080/accounts -X POST -H "Content-Type: application/json" -H -d '{"customerId":"57f4dadc6d138cf005711f4e", "initialCredit":"2000.00"}'
-$ curl http://localhost:8080/accounts
+```
+
+Running without docker:
+
+```bash
+$ mvn clean install
+$ java -jar discovery-service/target/discovery-service-1.0.0-SNAPSHOT.jar
+$ java -jar transactions-service/target/transactions-service-1.0.0-SNAPSHOT.jar
+$ java -jar accounts-service/target/accounts-service-1.0.0-SNAPSHOT.jar
+$ java -jar edge-service/target/edge-service-1.0.0-SNAPSHOT.jar
+```
+
+Once the system is running, we can try it out with the following commands:
+
+```bash
+$ curl http://localhost/api/accounts -X POST -H "Content-Type: application/json" -H -d '{"customerId":"57f4dadc6d138cf005711f4e", "initialCredit":"2000.00"}'
+$ curl http://localhost/api/accounts?customerId=57f4dadc6d138cf005711f4e
 ```
 
 ### Build
