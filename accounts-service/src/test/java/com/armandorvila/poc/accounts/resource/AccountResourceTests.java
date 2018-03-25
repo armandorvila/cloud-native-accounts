@@ -27,7 +27,7 @@ import reactor.core.publisher.Mono;
 @RunWith(SpringRunner.class)
 @WebFluxTest(AccountResource.class)
 @AutoConfigureWebTestClient
-public class AccountResourceTest {
+public class AccountResourceTests {
 
 	@MockBean
 	private AccountRepository accountRespository;
@@ -81,7 +81,7 @@ public class AccountResourceTest {
 		given(accountRespository.findById(account.getId()))
 		  .willReturn(Mono.just(account));
 		
-		webClient.get().uri("/accounts/{id}", account.getId())
+		webClient.get().uri("/accounts/{accountId}", account.getId())
 					.accept(MediaType.APPLICATION_JSON)
 					.exchange()
 					.expectStatus().isOk()
@@ -97,7 +97,7 @@ public class AccountResourceTest {
 		given(accountRespository.findById("someid"))
 		  .willReturn(Mono.empty());
 		
-		webClient.get().uri("/accounts/{id}", "someid")
+		webClient.get().uri("/accounts/{accountId}", "someid")
 					.accept(MediaType.APPLICATION_JSON)
 					.exchange()
 					.expectStatus().isNotFound()

@@ -14,7 +14,7 @@ import com.armandorvila.poc.transactions.repository.TransactionRepository;
 
 @Configuration
 @EnableMongoAuditing
-@EnableReactiveMongoRepositories(basePackages = "com.armandorvila.poc.transactions.repository")
+@EnableReactiveMongoRepositories("com.armandorvila.poc.transactions.repository")
 public class DatabseConfiguration {
 
 	@Autowired
@@ -22,6 +22,7 @@ public class DatabseConfiguration {
 	
 	@PostConstruct
 	public void initializeDatabase() {
+		//This is going to get duplicated when running more than one instance.
 		transactionRepository.saveAll(Arrays.asList(
 				new Transaction("Some transaction"),
 				new Transaction("Some other transaction")

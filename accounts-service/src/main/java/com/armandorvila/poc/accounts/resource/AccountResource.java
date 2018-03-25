@@ -43,8 +43,8 @@ public class AccountResource {
 		return accountRepository.findAll(pageable);
 	}
 
-	@GetMapping("/accounts/{id}")
-	public Mono<ResponseEntity<Account>> getAccount(@PathVariable("id") String id) {
+	@GetMapping("/accounts/{accountId}")
+	public Mono<ResponseEntity<Account>> getAccount(@PathVariable("accountId") String id) {
 		return accountRepository.findById(id)
 				.map(account -> new ResponseEntity<>(account, OK))
 				.defaultIfEmpty(new ResponseEntity<>(NOT_FOUND));

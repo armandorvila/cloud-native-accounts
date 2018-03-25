@@ -14,7 +14,7 @@ import com.armandorvila.poc.accounts.repository.AccountRepository;
 
 @Configuration
 @EnableMongoAuditing
-@EnableReactiveMongoRepositories(basePackages = "com.armandorvila.poc.accounts.repository")
+@EnableReactiveMongoRepositories("com.armandorvila.poc.accounts.repository")
 public class DatabseConfiguration {
 
 	@Autowired
@@ -22,6 +22,7 @@ public class DatabseConfiguration {
 	
 	@PostConstruct
 	public void initializeDatabase() {
+		//This is going to get duplicated when running more than one instance.
 		accountRepository.saveAll(Arrays.asList(
 				new Account("Some account"),
 				new Account("Some other account")
