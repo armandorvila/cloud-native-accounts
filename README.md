@@ -83,8 +83,11 @@ $ java -jar edge-service/target/edge-service-1.0.0-SNAPSHOT.jar
 Once the system is running, we can try it out with the following commands:
 
 ```bash
-$ curl http://localhost/api/accounts -X POST -H "Content-Type: application/json" -H -d '{"customerId":"57f4dadc6d138cf005711f4e", "initialCredit":"2000.00"}'
-$ curl http://localhost/api/accounts?customerId=57f4dadc6d138cf005711f4e
+$ curl -X POST \
+  http://localhost/api/accounts \
+  -H 'content-type: application/json' \
+  -d '{"customerId":"5ab7b1e41fe5db3ac0945a10", "initialCredit":"2000.00", "description": "Personal account"}'
+$ curl http://localhost/api/accounts?customerId=5ab7b1e41fe5db3ac0945a10
 ```
 
 ### Build
