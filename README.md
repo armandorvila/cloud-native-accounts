@@ -85,11 +85,9 @@ Once the system is running, we can try it out with the following commands:
 ```bash
 $ curl -X POST \
   http://localhost/api/accounts \
-  -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
-  -H 'postman-token: 9bfb2157-6fd1-0426-3850-586328c620a1' \
-  -d '{"customerId":"5ab7b2001fe5db05b42181a9", "initialCredit":"2000.00", "description": "Personal account"}'
-$ curl http://localhost/api/accounts?customerId=5ab7b2001fe5db05b42181a9
+  -d '{"customerId":"5ab7b1e41fe5db3ac0945a10", "initialCredit":"2000.00", "description": "Personal account"}'
+$ curl http://localhost/api/accounts?customerId=5ab7b1e41fe5db3ac0945a10
 ```
 
 ### Build
