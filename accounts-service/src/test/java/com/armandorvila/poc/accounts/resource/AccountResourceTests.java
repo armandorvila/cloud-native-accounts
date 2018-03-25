@@ -82,10 +82,10 @@ public class AccountResourceTests {
 		  .willReturn(Mono.just(account));
 		
 		webClient.get().uri("/accounts/{accountId}", account.getId())
-					.accept(MediaType.APPLICATION_JSON)
+					.accept(APPLICATION_JSON)
 					.exchange()
 					.expectStatus().isOk()
-					.expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+					.expectHeader().contentType(APPLICATION_JSON_UTF8)
 					.expectBody(Account.class)
 					.isEqualTo(account);
 		
