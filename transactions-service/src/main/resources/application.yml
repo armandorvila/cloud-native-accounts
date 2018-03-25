@@ -12,3 +12,8 @@ management:
     web:
       exposure:
         include: '*'
+        
+spring:
+  profiles:
+    active:
+ #   - prod Un comment this to work against an actual mongodb during development.

@@ -1,0 +1,11 @@
+#Configuration file used when running from docker compose.
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/
+
+#Disable actuator endpoints  
+management:
+  endpoints:
+    enabled-by-default: false

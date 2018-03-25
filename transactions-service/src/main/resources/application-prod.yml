@@ -1,0 +1,23 @@
+#Configuration file used when running from docker compose.
+
+server:
+  port: 8000
+  
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/
+
+
+management:
+  endpoints:
+    enabled-by-default: false #Disable actuator endpoints  
+
+    
+spring:
+  data:
+    mongodb:
+      uri: mongodb://database:27017/transactions
+  autoconfigure:
+    exclude: #Disable embedded mongo 
+    - org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration 
