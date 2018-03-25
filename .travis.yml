@@ -1,0 +1,64 @@
+sudo: false
+
+services:
+  - docker
+  
+language: java
+
+env:
+  global:
+    - COMMIT=${TRAVIS_COMMIT::8}
+
+jdk: oraclejdk8 
+
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
+
+script: mvn clean verify
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+  
+  - docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
+  
+  - export REPO=armandorvila/accounts-service
+  
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  
+  - docker build --quiet --file ./accounts-service/src/main/docker/Dockerfile --tag $REPO:$COMMIT .
+  
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  
+  - docker push $REPO
+  
+  - export REPO=armandorvila/transactions-service
+  
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  
+  - docker build --quiet --file ./transactions-service/src/main/docker/Dockerfile --tag $REPO:$COMMIT .
+  
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  
+  - docker push $REPO
+  
+  - export REPO=armandorvila/edge-service
+  
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  
+  - docker build --quiet --file ./edge-service/src/main/docker/Dockerfile --tag $REPO:$COMMIT .
+  
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  
+  - docker push $REPO
+  
+  - export REPO=armandorvila/discovery-service
+  
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  
+  - docker build --quiet --file ./discovery-service/src/main/docker/Dockerfile --tag $REPO:$COMMIT .
+  
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  
+  - docker push $REPO
