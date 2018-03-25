@@ -32,11 +32,9 @@ public class TransactionsApplicationTests {
 	@Autowired
 	protected WebTestClient webClient;
 	
-	private Flux<Transaction> transactions;
-	
 	@Before
 	public void setUp() {
-		transactions = this.transactionRepository.deleteAll()
+		Flux<Transaction> transactions = this.transactionRepository.deleteAll()
 				.thenMany(transactionRepository.saveAll(asList(
 						new Transaction(ACCOUNT_ID, "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(8000.00)),
 						new Transaction(ACCOUNT_ID, "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(8000.00)))));
