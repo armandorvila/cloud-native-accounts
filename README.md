@@ -46,11 +46,11 @@ The following table contains the system endpoints:
 
 | Endpoint | Method | Scope | Description |
 | ------------ | -------------- | -------------- | ------- |
-| `/api/accounts` | POST | Public | Creates a new account associated to the specified customer.  |
-| `/api/accounts` | GET | Public | Retrieves all the accounts, it implements a customerId filter and limit/offset pagination.  |
-| `/api/accounts/{accountId}` | GET | Public | Retrieves an specific account given the ID.  |
-| `/api/accounts/{accountId}/transactions` | GET | Public | Retrieves all the transactions of a given account.  |
-| `/transactions?accountId={accountId}` | GET | Internal | Retrieves all the transactions of an account, it offset/size pagination.|
+| `/api/accounts` | POST | Public | Creates a new account associated to the specified customer  |
+| `/api/accounts` | GET | Public | Retrieves all the accounts, it implements a customerId filter and limit/offset pagination  |
+| `/api/accounts/{accountId}` | GET | Public | Retrieves an specific account given the ID  |
+| `/api/accounts/{accountId}/transactions` | GET | Public | Retrieves all the transactions of a given account  |
+| `/transactions?accountId={accountId}` | GET | Internal | Retrieves all the transactions of an account, it implements offset/size pagination|
 
 ### Running
 
@@ -63,21 +63,28 @@ Considerations:
 * When the system runs, it might take a couple of minutes until the services are registered.
 
 
+Running with docker and docker compose:
+
 ```bash
 $ mvn clean install
 $ docker-compose up --build
-$ curl http://localhost/api/accounts -X POST -H "Content-Type: application/json" -H -d '{"customerId":"57f4dadc6d138cf005711f4e", "initialCredit":"2000.00"}'
-$ curl http://localhost/api/accounts
 ```
 
-If docker is not available, it can be run with the following commands:
+Running without docker:
 
 ```bash
 $ mvn clean install
-java -jar discovery-service/target/discovery-service-1.0.0-SNAPSHOT.jar
-java -jar transactions-service/target/transactions-service-1.0.0-SNAPSHOT.jar
-java -jar accounts-service/target/accounts-service-1.0.0-SNAPSHOT.jar
-java -jar edge-service/target/edge-service-1.0.0-SNAPSHOT.jar
+$ java -jar discovery-service/target/discovery-service-1.0.0-SNAPSHOT.jar
+$ java -jar transactions-service/target/transactions-service-1.0.0-SNAPSHOT.jar
+$ java -jar accounts-service/target/accounts-service-1.0.0-SNAPSHOT.jar
+$ java -jar edge-service/target/edge-service-1.0.0-SNAPSHOT.jar
+```
+
+Once the system is running, we can try it out with the following commands:
+
+```bash
+$ curl http://localhost/api/accounts -X POST -H "Content-Type: application/json" -H -d '{"customerId":"57f4dadc6d138cf005711f4e", "initialCredit":"2000.00"}'
+$ curl http://localhost/api/accounts?customerId=57f4dadc6d138cf005711f4e
 ```
 
 ### Build
