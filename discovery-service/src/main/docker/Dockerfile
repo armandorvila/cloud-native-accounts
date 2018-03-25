@@ -1,4 +1,4 @@
-FROM anapsix/alpine-java
+FROM anapsix/alpine-java:8
 
 MAINTAINER armando.ramirez.vila@gmail.com
 

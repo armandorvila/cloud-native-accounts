@@ -13,8 +13,8 @@ import reactor.core.publisher.Flux;
 @Service
 public class TransactionsService {
 	
-	static final String TRANSACTIONS_SERVICE_PATH = "/transactions?accountId={accountId}&limit={limit}&offset={offset}";
-	static final String TRANSACTIONS_SERVICE_ID = "transactions-service";
+	protected static final String TRANSACTIONS_SERVICE_PATH = "/transactions?accountId={accountId}&limit={limit}&offset={offset}";
+	protected static final String TRANSACTIONS_SERVICE_ID = "transactions-service";
 
 	private LoadBalancerClient loadBalancer;
 	private WebClient webClient;
