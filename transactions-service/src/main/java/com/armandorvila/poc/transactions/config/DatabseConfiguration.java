@@ -21,16 +21,19 @@ public class DatabseConfiguration {
 	@Autowired
     private TransactionRepository transactionRepository;
 	
-	/* This is going to get duplicated when running more than one instance. That could be fixed with a profile check.*/
+	/*
+	 * Development only.
+	 */
 	@PostConstruct
 	public void initializeDatabase() {
+		transactionRepository.deleteAll().thenMany(
 		transactionRepository.saveAll(Arrays.asList(
-				new Transaction("5ab698238d14c64fc85b3d38", "Some transaction", new BigDecimal(-10.0), new BigDecimal(8000.00)),
-				new Transaction("5ab698238d14c64fc85b3d38", "Some other transaction", new BigDecimal(-10.0), new BigDecimal(7990.00)),
-				new Transaction("5ab698238d14c64fc85b3d38", "Some transaction", new BigDecimal(-10.0), new BigDecimal(7980.00)),
-				new Transaction("5ab698238d14c64fc85b3d38", "Some other transaction", new BigDecimal(-10.0), new BigDecimal(7970.00)),
-				new Transaction("57b698238d14c64fc85b3d39", "Some transaction", new BigDecimal(-10.0), new BigDecimal(7960.00)),
-				new Transaction("57b698238d14c64fc85b3d39", "Some other transaction", new BigDecimal(-10.0), new BigDecimal(7950.00))
-				)).subscribe();
+				new Transaction("5ab698238d14c64fc85b3d38", "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(8000.00)),
+				new Transaction("5ab698238d14c64fc85b3d38", "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7990.00)),
+				new Transaction("5ab698238d14c64fc85b3d38", "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7980.00)),
+				new Transaction("5ab698238d14c64fc85b3d38", "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7970.00)),
+				new Transaction("57b698238d14c64fc85b3d39", "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7960.00)),
+				new Transaction("57b698238d14c64fc85b3d39", "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7950.00))
+				))).subscribe();
 	}
 }

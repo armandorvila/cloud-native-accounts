@@ -33,8 +33,8 @@ public class TransactionRepositoryTests {
 	public void setUp() {
 		transactions = this.transactionRepository.deleteAll()
 				.thenMany(transactionRepository.saveAll(asList(
-						new Transaction(ACCOUNT_ID, "Some transaction", new BigDecimal(-10.0), new BigDecimal(8000.00), LocalDateTime.now()),
-						new Transaction(ACCOUNT_ID, "Some other transaction", new BigDecimal(-10.0), new BigDecimal(7900.00), LocalDateTime.now().plusMinutes(1)))));
+						new Transaction(ACCOUNT_ID, "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(8000.00), LocalDateTime.now()),
+						new Transaction(ACCOUNT_ID, "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(7900.00), LocalDateTime.now().plusMinutes(1)))));
 		
 		StepVerifier.create(transactions).expectNextCount(2).verifyComplete();
 	}

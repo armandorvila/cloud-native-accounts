@@ -32,14 +32,12 @@ public class TransactionsApplicationTests {
 	@Autowired
 	protected WebTestClient webClient;
 	
-	private Flux<Transaction> transactions;
-	
 	@Before
 	public void setUp() {
-		transactions = this.transactionRepository.deleteAll()
+		Flux<Transaction> transactions = this.transactionRepository.deleteAll()
 				.thenMany(transactionRepository.saveAll(asList(
-						new Transaction(ACCOUNT_ID, "Some transaction", new BigDecimal(-10.0), new BigDecimal(8000.00)),
-						new Transaction(ACCOUNT_ID, "Some other transaction", new BigDecimal(-10.0), new BigDecimal(8000.00)))));
+						new Transaction(ACCOUNT_ID, "Some transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(8000.00)),
+						new Transaction(ACCOUNT_ID, "Some other transaction", BigDecimal.valueOf(-10.0), BigDecimal.valueOf(8000.00)))));
 		
 		StepVerifier.create(transactions).expectNextCount(2).verifyComplete();
 	}
@@ -70,8 +68,8 @@ public class TransactionsApplicationTests {
 	
 	@Test  
 	public void should_RegisterNewTransaction_WhenTransactionIsValid() throws Exception {	
-		final Transaction transaction = new Transaction(ACCOUNT_ID, "Dinner and drinks", new BigDecimal(-250.90), null);
-		final BigDecimal newBalance = new BigDecimal(8000.00).add(transaction.getValue());
+		final Transaction transaction = new Transaction(ACCOUNT_ID, "Dinner and drinks", BigDecimal.valueOf(-250.90), null);
+		final BigDecimal newBalance = BigDecimal.valueOf(8000.00).add(transaction.getValue());
 		
 		webClient.post().uri("/transactions")
 						.accept(APPLICATION_JSON)
@@ -89,8 +87,8 @@ public class TransactionsApplicationTests {
 	
 	@Test  
 	public void should_SendBadRequest_WhenAccount() throws Exception {	
-		final Transaction transaction = new Transaction(ACCOUNT_ID, "Dinner and drinks", new BigDecimal(-250.90), null);
-		final BigDecimal newBalance = new BigDecimal(8000.00).add(transaction.getValue());
+		final Transaction transaction = new Transaction(ACCOUNT_ID, "Dinner and drinks", BigDecimal.valueOf(-250.90), null);
+		final BigDecimal newBalance = BigDecimal.valueOf(8000.00).add(transaction.getValue());
 		
 		webClient.post().uri("/transactions")
 						.accept(APPLICATION_JSON)

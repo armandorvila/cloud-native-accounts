@@ -45,7 +45,7 @@ public class TransactionsResourceTest {
 	@Before
 	public void setUp() {
 		this.transaction = new Transaction(ACCOUNT_ID, "Some transaction", 
-				new BigDecimal(-10.0), new BigDecimal(8000.00));
+				BigDecimal.valueOf(-10.0), BigDecimal.valueOf(8000.00));
 	}
 	
 	@Test  
@@ -64,7 +64,26 @@ public class TransactionsResourceTest {
 						.expectBody(Transaction.class)
 						.returnResult().getResponseBody();
 		 
-		 assertThat(result.getBalance()).isEqualTo(transaction.getBalance().subtract(new BigDecimal(10)));
+		 assertThat(result.getBalance()).isEqualTo(transaction.getBalance().subtract(BigDecimal.valueOf(10)));
+	}
+	
+	@Test  
+	public void should_RegisterNewTransaction_WhenTransactionIsValid_AndTheAccountIsNew() throws Exception {
+		given(transactionRepository.findFirstByAccountIdOrderByTimestampDesc(transaction.getAccountId()))
+		  .willReturn(Flux.empty());
+		
+		given(transactionRepository.save(any(Transaction.class)))
+		  .willAnswer(invocation -> Mono.just(invocation.getArguments()[0]));
+		
+		 Transaction result = webClient.post().uri("/transactions")
+						.accept(APPLICATION_JSON)
+						.syncBody(transaction)
+						.exchange()
+						.expectStatus().isCreated()
+						.expectBody(Transaction.class)
+						.returnResult().getResponseBody();
+		 
+		 assertThat(result.getBalance()).isEqualTo(transaction.getValue());
 	}
 	
 	@Test  

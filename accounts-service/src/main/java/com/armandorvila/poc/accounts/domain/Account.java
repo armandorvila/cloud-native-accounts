@@ -1,6 +1,7 @@
 package com.armandorvila.poc.accounts.domain;
 
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -33,13 +34,15 @@ public class Account {
 	@DBRef
 	private Customer customer;
 	
+	private BigDecimal balance;
+	
 	@CreatedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
-	private Instant createdAt;
+	private LocalDateTime createdAt;
 
 	@LastModifiedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
-	private Instant lastModifiedAt;
+	private LocalDateTime lastModifiedAt;
 	
 	public Account(String description, Customer customer) {
 		this.description = description;
@@ -49,5 +52,10 @@ public class Account {
 	public Account(String id, String description) {
 		this.id = id;
 		this.description = description;
+	}
+	
+	public Account updateBalance(BigDecimal balance) {
+		this.setBalance(balance);
+		return this;
 	}
 }
