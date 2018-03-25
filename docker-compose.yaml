@@ -60,3 +60,12 @@ services:
       SPRING_PROFILES_ACTIVE: prod
     depends_on:
       - discovery-service
+
+
+  user-interface:
+    image: armandorvila/accounts-user-interface
+    build:
+      context: .
+      dockerfile: ./accounts-user-interface/Dockerfile
+    ports:
+      - 5000:80

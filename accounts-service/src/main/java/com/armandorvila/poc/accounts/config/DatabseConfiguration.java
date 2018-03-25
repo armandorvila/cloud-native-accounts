@@ -1,5 +1,6 @@
 package com.armandorvila.poc.accounts.config;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -49,7 +50,7 @@ public class DatabseConfiguration {
 
 	private List<Account> accounts(Customer customer) {
 		return Arrays.asList(
-				new Account("Some account", customer), 
-				new Account("Some other account", customer));
+				new Account("5ab8086f1f11cd453ce85c23", "Personal Account", customer, BigDecimal.valueOf(20000), null, null),
+				new Account("5ab8086f1f11cd453ce85c24", "Work Account", customer, BigDecimal.valueOf(30000), null, null));
 	}
 }
