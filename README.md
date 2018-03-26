@@ -56,7 +56,7 @@ The following table contains the system endpoints:
 
 Considerations:
 
-* When run as regular Java applications, each service is built using an in memory MongoDB data bases.
+* When run as regular Java applications, each service is built using an in memory MongoDB database.
 * A docker compose has been provided to run the entire system, including an actual MongoDB database.
 * The project must be built before running the system.
 * When the system runs there are some accounts and customers loaded in the database.
