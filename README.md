@@ -6,7 +6,7 @@
 * Spring Framework 5
 * Spring Webflux/Reactor
 * Spring Data/MongoDB
-* Microservice architecture
+* Microservices architecture
 * Service discovery
 * API gateway
 * Docker and Docker compose
@@ -97,7 +97,7 @@ Additionally, a small user interface has been implemented, which will be served 
 * 8761 for Eureka
 * 5000 for User interface
 
-The microservices will run on random ports, since they are registered and discovered with Eureka.
+The microservices will listen on random ports, since they are registered and discovered with Eureka.
 
 ### Build
 [![Build Status](https://secure.travis-ci.org/armandorvila/cloud-native-accounts.png)](http://travis-ci.org/armandorvila/cloud-native-accounts)  [![codecov.io](https://codecov.io/github/armandorvila/cloud-native-accounts/coverage.svg)](https://codecov.io/github/armandorvila/cloud-native-accounts) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/62c434b415f444e48bbed29f83b57a1f)](https://www.codacy.com/app/armandorvila/cloud-native-accounts?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=armandorvila/cloud-native-accounts&amp;utm_campaign=Badge_Grade)
